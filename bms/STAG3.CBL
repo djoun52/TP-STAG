@@ -1,5 +1,5 @@
 *                                                                       00000100
-* MAP TP STAGIAIRE                                      00000100
+* MAP TP STAGIAIRE                                      
 *                                                                       00000100
         PRINT NOGEN
 STAG3   DFHMSD TYPE=&SYSPARM,MODE=INOUT,LANG=COBOL,                    X00000100
@@ -7,10 +7,10 @@ STAG3   DFHMSD TYPE=&SYSPARM,MODE=INOUT,LANG=COBOL,                    X00000100
 MAP0    DFHMDI COLUMN=1,LINE=1,SIZE=(24,80),MAPATTS=(COLOR,HILIGHT),   X00000210
                DSATTS=(COLOR,HILIGHT)
 TERM0   DFHMDF POS=(01,01),ATTRB=ASKIP,LENGTH=13,COLOR=NEUTRAL 
-        DFHMDF POS=(01,25),HILIGHT=UNDERLINE,                          X
+        DFHMDF POS=(01,27),HILIGHT=UNDERLINE,                          X
                ATTRB=ASKIP,LENGTH=22,                                  X00000220
                INITIAL='GESTION DES STAGIAIRES',COLOR=BLUE
-        DFHMDF POS=(01,53),ATTRB=ASKIP,LENGTH=0
+        DFHMDF POS=(01,50),ATTRB=ASKIP,LENGTH=0
 DAT0    DFHMDF POS=(01,70),ATTRB=ASKIP,LENGTH=10
 OPER0   DFHMDF POS=(02,01),ATTRB=ASKIP,LENGTH=14
 TIM0    DFHMDF POS=(02,72),ATTRB=ASKIP,LENGTH=8
@@ -34,36 +34,75 @@ TIM0    DFHMDF POS=(02,72),ATTRB=ASKIP,LENGTH=8
                INITIAL='TAPEZ VOTRE CHOIX : ' 
 NUM0    DFHMDF POS=(14,41),COLOR=YELLOW,                               X00000400
                ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=1                      00000410
-        DFHMDF POS=(04,38),ATTRB=ASKIP,LENGTH=0
+        DFHMDF POS=(14,43),ATTRB=ASKIP,LENGTH=0
         DFHMDF POS=(15,61),ATTRB=ASKIP,LENGTH=0
 MESS0   DFHMDF POS=(23,01),ATTRB=ASKIP,LENGTH=79,COLOR=RED
         DFHMDF POS=(24,01),ATTRB=ASKIP,LENGTH=37,                      X
-               INITIAL='PF12 - FIN         ENTER - VALIDATION'                                      
+               INITIAL='PF12 - FIN         ENTER - VALIDATION'
 *                                1         2         3         4
 *                       12345678901234567890123456789012345678901234567
 *                5         6         7        7
 *              89012345678901234567890123456789
-
 MAP1    DFHMDI COLUMN=1,LINE=1,SIZE=(24,80),MAPATTS=(COLOR,HILIGHT),   X00000210
                DSATTS=(COLOR,HILIGHT)
 TERM1   DFHMDF POS=(01,01),ATTRB=ASKIP,LENGTH=13
-        DFHMDF POS=(01,29),HILIGHT=UNDERLINE,                          X00000211
+        DFHMDF POS=(01,27),HILIGHT=UNDERLINE,                          X00000211
                ATTRB=ASKIP,LENGTH=23,                                  X00000220
-               INITIAL='CREATION D''UN STAGIAIRE',                       00000300
-        DFHMDF POS=(01,53),ATTRB=ASKIP,LENGTH=0
+               INITIAL='CREATION D''UN STAGIAIRE',COLOR=BLUE            00000300
+        DFHMDF POS=(01,51),ATTRB=ASKIP,LENGTH=0
 DAT1    DFHMDF POS=(01,70),ATTRB=ASKIP,LENGTH=10
 OPER1   DFHMDF POS=(02,01),ATTRB=ASKIP,LENGTH=14
 TIM1    DFHMDF POS=(02,72),ATTRB=ASKIP,LENGTH=8
-        DFHMDF POS=(04,10),                                            X00000211
-               ATTRB=ASKIP,LENGTH=21,                                  X
+        DFHMDF POS=(04,10),ATTRB=ASKIP,LENGTH=21,                      X
                INITIAL='NUMERO DE STAGIAIRE*:'
-NUM1    DFHMDF POS=(14,41),HILIGHT=UNDERLINE,                          X00000400
-               ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=4          
+NUM1    DFHMDF POS=(04,32),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=4   
+        DFHMDF POS=(04,37),ATTRB=ASKIP,LENGTH=0       
+        DFHMDF POS=(06,10),ATTRB=ASKIP,LENGTH=5,                       X00000211
+               INITIAL='NOM*:'
+NOM0    DFHMDF POS=(06,16),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,IC,FSET),LENGTH=25   
+        DFHMDF POS=(06,42),ATTRB=ASKIP,LENGTH=0       
+        DFHMDF POS=(06,43),ATTRB=ASKIP,LENGTH=8,                       X
+               INITIAL='PRENOM*:'
+PNM0    DFHMDF POS=(06,52),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,IC,FSET),LENGTH=25
+        DFHMDF POS=(06,78),ATTRB=ASKIP,LENGTH=0          
+        DFHMDF POS=(08,10),ATTRB=ASKIP,LENGTH=11,                      X
+               INITIAL='ADRESSE 1 :'
+ADS0    DFHMDF POS=(08,22),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,IC,FSET),LENGTH=30
+        DFHMDF POS=(08,53),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(10,15),ATTRB=ASKIP,LENGTH=13,                      X
+               INITIAL='CODE POSTAL :'
+CP0     DFHMDF POS=(10,29),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,IC,FSET),LENGTH=5
+        DFHMDF POS=(10,35),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(10,38),ATTRB=ASKIP,LENGTH=7,                       X
+               INITIAL='VILLE :'
+VL0     DFHMDF POS=(10,46),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,IC,FSET),LENGTH=30
+        DFHMDF POS=(10,77),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(14,10),ATTRB=ASKIP,LENGTH=16,                      X
+               INITIAL='TELEPHONE FIXE :'
+TF0     DFHMDF POS=(14,27),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=10
+        DFHMDF POS=(14,38),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(14,40),ATTRB=ASKIP,LENGTH=18,                      X
+               INITIAL='TELEPHONE MOBILE :'
+TM0     DFHMDF POS=(14,59),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=10
+        DFHMDF POS=(14,70),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(16,10),ATTRB=ASKIP,LENGTH=30,                      X
+               INITIAL='DATE DE NAISSANCE (JJMMAAAA)*:'
+DDN0    DFHMDF POS=(16,41),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=8
+        DFHMDF POS=(16,50),ATTRB=ASKIP,LENGTH=0   
 MESS1   DFHMDF POS=(22,01),ATTRB=ASKIP,LENGTH=79,COLOR=RED        
-        DFHMDF POS=(23,01),ATTRB=ASKIP,LENGTH=47,COLOR=RED
-               INITIAL='-----------------------------------------------'
-        DFHMDF POS=(24,02),ATTRB=ASKIP,LENGTH=37,                      X
-               INITIAL='PF12 - FIN         ENTER - VALIDATION' 
+        DFHMDF POS=(23,01),ATTRB=ASKIP,LENGTH=40,COLOR=RED,            X
+               INITIAL='----------------------------------------'
+        DFHMDF POS=(24,02),ATTRB=ASKIP,LENGTH=54,                      X
+               INITIAL='PF12 - FIN       PF3 - RETOUR       ENTER - VALX
+               IDATION' 
         DFHMSD TYPE=FINAL                                               00000800
         END                                                             00000900
--
