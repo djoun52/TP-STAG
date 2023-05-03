@@ -104,5 +104,66 @@ MESS1   DFHMDF POS=(22,01),ATTRB=ASKIP,LENGTH=79,COLOR=RED
         DFHMDF POS=(24,02),ATTRB=ASKIP,LENGTH=54,                      X
                INITIAL='PF12 - FIN       PF3 - RETOUR       ENTER - VALX
                IDATION' 
+MAP2    DFHMDI COLUMN=1,LINE=1,SIZE=(24,80),MAPATTS=(COLOR,HILIGHT),   X00000210
+               DSATTS=(COLOR,HILIGHT)
+TERM2   DFHMDF POS=(01,01),ATTRB=ASKIP,LENGTH=13
+        DFHMDF POS=(01,27),HILIGHT=UNDERLINE,                          X00000211
+               ATTRB=ASKIP,LENGTH=28,                                  X00000220
+               INITIAL='CONSULTATION D''UN STAGIAIRE',COLOR=BLUE        00000300
+               DFHMDF POS=(01,56),ATTRB=ASKIP,LENGTH=0
+DAT2    DFHMDF POS=(01,70),ATTRB=ASKIP,LENGTH=10
+OPER2   DFHMDF POS=(02,01),ATTRB=ASKIP,LENGTH=14
+TIM2    DFHMDF POS=(02,72),ATTRB=ASKIP,LENGTH=8
+        DFHMDF POS=(04,10),ATTRB=ASKIP,LENGTH=21,                      X
+               INITIAL='NUMERO DE STAGIAIRE*:'
+NUM2    DFHMDF POS=(04,32),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=4   
+        DFHMDF POS=(04,37),ATTRB=ASKIP,LENGTH=0       
+        DFHMDF POS=(06,10),ATTRB=ASKIP,LENGTH=5,                       X00000211
+               INITIAL='NOM*:'
+NOM1    DFHMDF POS=(06,16),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=25   
+        DFHMDF POS=(06,42),ATTRB=ASKIP,LENGTH=0       
+        DFHMDF POS=(06,43),ATTRB=ASKIP,LENGTH=8,                       X
+               INITIAL='PRENOM*:'
+PNM1    DFHMDF POS=(06,52),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=25
+        DFHMDF POS=(06,78),ATTRB=ASKIP,LENGTH=0          
+        DFHMDF POS=(08,10),ATTRB=ASKIP,LENGTH=11,                      X
+               INITIAL='ADRESSE 1 :'
+ADS1    DFHMDF POS=(08,22),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=30
+        DFHMDF POS=(08,53),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(10,15),ATTRB=ASKIP,LENGTH=13,                      X
+               INITIAL='CODE POSTAL :'
+CP1     DFHMDF POS=(10,29),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=5
+        DFHMDF POS=(10,35),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(10,38),ATTRB=ASKIP,LENGTH=7,                       X
+               INITIAL='VILLE :'
+VL1     DFHMDF POS=(10,46),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=30
+        DFHMDF POS=(10,77),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(14,10),ATTRB=ASKIP,LENGTH=16,                      X
+               INITIAL='TELEPHONE FIXE :'
+TF1     DFHMDF POS=(14,27),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=10
+        DFHMDF POS=(14,38),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(14,40),ATTRB=ASKIP,LENGTH=18,                      X
+               INITIAL='TELEPHONE MOBILE :'
+TM1     DFHMDF POS=(14,59),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=10
+        DFHMDF POS=(14,70),ATTRB=ASKIP,LENGTH=0   
+        DFHMDF POS=(16,10),ATTRB=ASKIP,LENGTH=30,                      X
+               INITIAL='DATE DE NAISSANCE (JJMMAAAA)*:'
+DDN1    DFHMDF POS=(16,41),HILIGHT=UNDERLINE,                          X00000400
+               ATTRB=(ASKIP,FSET),LENGTH=8
+        DFHMDF POS=(16,50),ATTRB=ASKIP,LENGTH=0   
+MESS2   DFHMDF POS=(22,01),ATTRB=ASKIP,LENGTH=79,COLOR=RED        
+        DFHMDF POS=(23,01),ATTRB=ASKIP,LENGTH=40,COLOR=RED,            X
+               INITIAL='----------------------------------------'
+        DFHMDF POS=(24,02),ATTRB=ASKIP,LENGTH=54,                      X
+               INITIAL='PF12 - FIN       PF3 - RETOUR       ENTER - VALX
+               IDATION' 
         DFHMSD TYPE=FINAL                                               00000800
         END                                                             00000900
