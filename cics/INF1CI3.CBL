@@ -11,12 +11,16 @@
            05 PROG-PRECEDENT      PIC X(8).
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
+           05 TS-NOM.
+             10 TS-NOM1           PIC X(4).
+             10 TS-NOM2           PIC X(4).
            05 FILLER              PIC X(26).
        01 C-R                     PIC S9(8) COMP.
        01 C-R-ED                  PIC ZZZ9.
        01 WS-TIME                 PIC X(8).
        01 TEXT-ERREUR             PIC X(15).
        01 MON-PROG                PIC X(8) VALUE 'INF1CI3 '.
+       01 PROGMENU                PIC X(8) VALUE 'INF0CI3 '.
        01 SPERR                   PIC X(8) VALUE 'SPERR3  '.
        01 MON-FICHIER             PIC X(8) VALUE 'FSTAG3  '.
        01 MA-MAP                  PIC X(8) VALUE 'MAP1    '.
@@ -80,6 +84,8 @@
       *----------------------*
       *  CHARGEMENT DE LA MAP AVANT AFFICHAGE
            MOVE LOW-VALUE TO MAP0I
+           MOVE EIBTRMID  TO TS-NOM1
+           MOVE MA-TRX    TO TS-NOM2
       *  SI TRAITEMENT PARTICULIER AVANT AFFICHAGE
            PERFORM  21100-TRAIT-SPECIFIQUE
            .
@@ -124,6 +130,9 @@
            EVALUATE EIBAID
               WHEN DFHENTER
                    PERFORM 23100-TRAIT-ENTER
+              WHEN DFHPF3
+                   MOVE PROGMENU TO PROG-SUIVANT
+                   PERFORM 23050-PROG-SUIVANT 
               WHEN DFHPF12
                    PERFORM 23200-TRAIT-FIN
               WHEN OTHER
@@ -158,22 +167,19 @@
               WHEN OTHER
                 PERFORM 91000-ERREUR-CICS
            END-EVALUATE
-           MOVE NUM0I TO NUM-PROG
-           IF NUM-PROG NOT NUMERIC OR NUM-PROG < 1 OR NUM-PROG > 5
-               STRING 'ERREUR NUMERO INVALIDE' 
-                      DELIMITED BY SIZE INTO MESS1O
-               PERFORM 22000-TRAIT-ENVOI
-           END-IF
-           MOVE NUM0I TO NUM-PROG
-           MOVE PROG(NUM-PROG) TO PROG-SUIVANT
-           PERFORM 23050-PROG-SUIVANT
+
+           
+           STRING 'TEST REUSSI'
+                  DELIMITED BY SIZE INTO MESS1O
+           PERFORM  22000-TRAIT-ENVOI
+
            .
+
        23200-TRAIT-FIN.
       *---------------*
            MOVE 'FIN DE LA TRANSACTION' TO MESSAGE-TXT
-           PERFORM   99000-FIN-CICS.
-
-
+           PERFORM   99000-FIN-CICS
+           .
 
        90000-ERR-TOUCHE.
       *----------------*
