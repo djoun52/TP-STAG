@@ -20,13 +20,13 @@
        01 C-R-ED                  PIC ZZZ9.
        01 WS-TIME                 PIC X(8).
        01 TEXT-ERREUR             PIC X(15).
-       01 MON-PROG                PIC X(8) VALUE 'INF1CI3 '.
+       01 MON-PROG                PIC X(8) VALUE 'INF3CI3 '.
        01 PROGMENU                PIC X(8) VALUE 'INF0CI3 '.
        01 SPERR                   PIC X(8) VALUE 'SPERR3  '.
        01 MON-FICHIER             PIC X(8) VALUE 'FSTAG03 '.
-       01 MA-MAP                  PIC X(8) VALUE 'MAP1    '.
+       01 MA-MAP                  PIC X(8) VALUE 'MAP3    '.
        01 MON-MAPSET              PIC X(8) VALUE 'MAPC3   '.
-       01 MA-TRX                  PIC X(4) VALUE 'T1C3'.
+       01 MA-TRX                  PIC X(4) VALUE 'T3C3'.
        01 NUM-TEL                 PIC X(10).
        01 DDN-9                   PIC 9(8).
        01 ADN-9                   PIC 9(4).
