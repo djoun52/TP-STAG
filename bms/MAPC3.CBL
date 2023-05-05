@@ -70,7 +70,7 @@ ADS0    DFHMDF POS=(08,22),HILIGHT=UNDERLINE,                          X00000400
         DFHMDF POS=(10,15),ATTRB=ASKIP,LENGTH=13,                      X
                INITIAL='CODE POSTAL :'
 CP0     DFHMDF POS=(10,29),HILIGHT=UNDERLINE,                          X00000400
-               ATTRB=(UNPROT,IC,FSET),LENGTH=5
+               ATTRB=(UNPROT,NUM,IC,FSET),LENGTH=5
         DFHMDF POS=(10,35),ATTRB=ASKIP,LENGTH=0   
         DFHMDF POS=(10,38),ATTRB=ASKIP,LENGTH=7,                       X
                INITIAL='VILLE :'
