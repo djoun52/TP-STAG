@@ -89,7 +89,7 @@
        21000-TRAIT-CHARGEMENT.
       *----------------------*
       *  CHARGEMENT DE LA MAP AVANT AFFICHAGE
-           MOVE LOW-VALUE TO MAP1I
+           MOVE LOW-VALUE TO MAP3I
            MOVE EIBTRMID  TO TS-NOM1
            MOVE MA-TRX    TO TS-NOM2
       *  SI TRAITEMENT PARTICULIER AVANT AFFICHAGE
@@ -108,17 +108,17 @@
        22000-TRAIT-ENVOI.
       *-----------------*
            STRING EIBTRMID '/' MON-MAPSET DELIMITED BY SIZE
-                  INTO TERM1O
+                  INTO TERM3O
            EXEC CICS ASKTIME ABSTIME(WS-TIME) END-EXEC
            EXEC CICS FORMATTIME ABSTIME(WS-TIME)
-                               DDMMYYYY(DAT1O)
+                               DDMMYYYY(DAT3O)
                                DATESEP ('/')
-                               TIME (TIM1O)
+                               TIME (TIM3O)
                                TIMESEP(':')
            END-EXEC
            EXEC CICS SEND MAP    (MA-MAP)
                           MAPSET (MON-MAPSET)
-                          FROM   (MAP1O)
+                          FROM   (MAP3O)
                           ERASE
                           CURSOR
            END-EXEC
@@ -155,14 +155,14 @@
                            RESP     (C-R)
            END-EXEC
            STRING 'PROGRAMME ' PROG-SUIVANT ' NON DISPONIBLE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
            PERFORM 22000-TRAIT-ENVOI
            .
        23100-TRAIT-ENTER.
       *------------------*
            EXEC CICS RECEIVE MAP   (MA-MAP)
                              MAPSET(MON-MAPSET)
-                             INTO  (MAP1I)
+                             INTO  (MAP3I)
                              RESP  (C-R)
            END-EXEC
            EVALUATE C-R
@@ -173,13 +173,16 @@
               WHEN OTHER
                 PERFORM 91000-ERREUR-CICS
            END-EVALUATE
-           
-           IF ETAPE NOT = '1'
-             PERFORM 23300-CHECK-INPUT
-             PERFORM 23400-ECRITURE
-           ELSE 
-             PERFORM 23450-ECRITURE-FIN 
-           END-IF          
+           EVALUATE ETAPE
+             WHEN '1'
+               PERFORM 23300-CHECK-INPUT
+               PERFORM 23430-MODIFICATION 
+             WHEN '2'
+               PERFORM 23450-MODIFICATION-FIN 
+             WHEN OTHER
+               PERFORM 23400-MODIFICATION-DEBUT
+           END-EVALUATE
+                      
            .
        23200-TRAIT-FIN.
       *---------------*
@@ -190,101 +193,101 @@
        23300-CHECK-INPUT.
       *------------------*  
       *  CHECK NUMERO STAGIAIRE 
-           IF NUM1I = LOW-VALUE 
+           IF NUM3I = LOW-VALUE 
               STRING 'NUMERO DE STAGIAIRE OBLIGATOIRE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
-           IF NUM1I < 1000 OR NUM1I > 5000
+           IF NUM3I < 1000 OR NUM1I > 5000
               STRING 'LE NUMERO DU STAGAIRE DOIT ETRE ENTRE 1000' 
-                      ' ET 5000' DELIMITED BY SIZE INTO MESS11O
+                      ' ET 5000' DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF 
       *  CHECK NOM STAGIAIRE
-           IF NOM1I = LOW-VALUE 
+           IF NOM3I = LOW-VALUE 
               STRING 'NOM DU STAGIAIRE OBLIGATOIRE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
       *  CHECK PRENOM STAGIAIRE
-           IF PNM1I = LOW-VALUE 
+           IF PNM3I = LOW-VALUE 
               STRING 'PRENOM DU STAGIAIRE OBLIGATOIRE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
 
       * CHECK SI VILLE OU ADRESSE INPUT SONT REMPLIS DE BLANC     
-           IF ADS1I = SPACES THEN
-             MOVE LOW-VALUE TO ADS1I
+           IF ADS3I = SPACES THEN
+             MOVE LOW-VALUE TO ADS3I
            END-IF            
-           IF VL1I = SPACES THEN
-             MOVE LOW-VALUE TO VL1I
+           IF VL3I = SPACES THEN
+             MOVE LOW-VALUE TO VL3I
            END-IF            
       *  CHECK ADRESSE COMPLETE OU VIDE 
-           IF (ADS1I = LOW-VALUE  AND CP1I = LOW-VALUE AND
-              VL1I = LOW-VALUE) OR (ADS1I NOT = LOW-VALUE AND 
-              CP1I NOT = LOW-VALUE AND VL1I NOT = LOW-VALUE ) THEN
+           IF (ADS3I = LOW-VALUE  AND CP3I = LOW-VALUE AND
+              VL3I = LOW-VALUE) OR (ADS3I NOT = LOW-VALUE AND 
+              CP3I NOT = LOW-VALUE AND VL3I NOT = LOW-VALUE ) THEN
               CONTINUE   
            ELSE
               STRING 'ADRESSE INCOMPLETE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
 
       *  CHECK TELEPHONE 
-           IF TF1I NOT = LOW-VALUE 
-             MOVE TF1I TO NUM-TEL
+           IF TF3I NOT = LOW-VALUE 
+             MOVE TF3I TO NUM-TEL
              IF NUM-TEL(1:2) NOT = 01 AND NOT = 02 AND NOT = 03 AND 
                    NOT = 04 AND NOT = 05 THEN
                 STRING 'LE NUMERO DU TELEPHONE FIXE DOIT COMMENCE PAR'
                        ' 01 OU 02 OU 03 OU 04 OU 05' 
-                      DELIMITED BY SIZE INTO MESS11O
-                MOVE '  ' TO TF1I(1:2)   
+                      DELIMITED BY SIZE INTO MESS31O
+                MOVE '  ' TO TF3I(1:2)   
                 PERFORM  22000-TRAIT-ENVOI
              END-IF
            END-IF 
-           IF TM1I NOT = LOW-VALUE 
-             MOVE TM1I TO NUM-TEL
+           IF TM3I NOT = LOW-VALUE 
+             MOVE TM3I TO NUM-TEL
              IF NUM-TEL(1:2) NOT = 06 AND NOT = 07
                 STRING 'LE NUMERO DU TELEPHONE MOBILE DOIT COMMENCE PAR'
                        ' 06 OU 07' 
-                      DELIMITED BY SIZE INTO MESS11O
-                MOVE '  ' TO TM1I(1:2)   
+                      DELIMITED BY SIZE INTO MESS31O
+                MOVE '  ' TO TM3I(1:2)   
                 PERFORM  22000-TRAIT-ENVOI
              END-IF
            END-IF 
       *  CHECK DATE DE NAISSANCE 
-           IF DDN1I = LOW-VALUE 
+           IF DDN3I = LOW-VALUE 
               STRING 'DATE DE NAISSANCE DU STAGIAIRE OBLIGATOIRE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
-           MOVE DDN1I TO DDN-9
+           MOVE DDN3I TO DDN-9
            IF DDN-9(1:2) < 01 
              STRING 'JOURS DE NAISSANCE INVALIDE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
            IF (DDN-9(3:2) = '01' OR = '03' OR = '05' OR = '07' OR 
            = '08' OR = '10' OR = '12') AND DDN-9(1:2) > 31 THEN
              STRING 'JOURS DE NAISSANCE INVALIDE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF    
            IF DDN-9(3:2) = '02' AND DDN-9(1:2) > 29 THEN
              STRING 'JOURS DE NAISSANCE INVALIDE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF  
            IF (DDN-9(3:2) = '04' OR = '06' OR = '09' OR = '11') AND 
               DDN-9(1:2) > 30 THEN 
              STRING 'JOURS DE NAISSANCE INVALIDE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF 
            IF DDN-9(3:2) > 12
               STRING 'MOIS DE NAISSANCE INVALIDE'
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
            EXEC CICS ASKTIME ABSTIME(WS-TIME) END-EXEC
@@ -296,88 +299,117 @@
            SUBTRACT ADN-9 FROM DAT-9 GIVING AGE-OK
            IF AGE-OK < 17 OR AGE-OK > 30              
               STRING 'ANNEE DE NAISSANCE INVALIDE ' DAT-9 ' '  AGE-OK
-                  DELIMITED BY SIZE INTO MESS11O
+                  DELIMITED BY SIZE INTO MESS31O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
            . 
-           
-       23400-ECRITURE.
+       23400-MODIFICATION-DEBUT.
+      *------------------------*
+           EXEC CICS READ FILE  (MON-FICHIER)
+                          RIDFLD(NUM3I)
+                          INTO  (E-STAGIAIRE)
+                          RESP  (C-R)
+           END-EXEC
+           EVALUATE C-R
+             WHEN DFHRESP(NORMAL)
+               MOVE E-NOM        TO NOM3I
+               MOVE E-PRENOM     TO PNM3I
+               MOVE E-DATE-NAISS TO DDN3I
+               MOVE E-TELDOM     TO TF3I
+               MOVE E-TELPOR     TO TM3I
+               MOVE E-ADR1       TO ADS3I
+               MOVE E-CODEP      TO CP3I  
+               MOVE E-VILLE      TO VL3I  
+               MOVE 'VOUS POUVEZ MODIFIEZ LES DONNNEES' TO OPER3O
+               MOVE '1'        TO ETAPE
+               PERFORM  22000-TRAIT-ENVOI
+             WHEN DFHRESP(NOTFND)
+               MOVE 'STAGIAIRE NON TROUVE' TO MESS2O
+             WHEN OTHER
+               PERFORM 80000-APPEL-SPERR
+               STRING 'ERREUR FICHIER ' TEXT-ERREUR DELIMITED BY SIZE
+                      INTO MESS2O
+           END-EVALUATE
+           .
+       23430-MODIFICATION.
       *------------------* 
-           MOVE DFHBMASF   TO NUM1A
-           MOVE DFHBMASF   TO NOM1A
-           MOVE DFHBMASF   TO PNM1A 
-           MOVE DFHBMASF   TO ADS1A
-           MOVE DFHBMASF   TO CP1A
-           MOVE DFHBMASF   TO VL1A
-           MOVE DFHBMASF   TO TF1A
-           MOVE DFHBMASF   TO TM1A
-           MOVE DFHBMASF   TO DDN1A
-           MOVE DFHBMASK   TO LCONF1A
-           MOVE DFHBMFSE   TO CONF1A
-           MOVE '1'        TO ETAPE
+           MOVE DFHBMASF   TO NUM3A
+           MOVE DFHBMASF   TO NOM3A
+           MOVE DFHBMASF   TO PNM3A 
+           MOVE DFHBMASF   TO ADS3A
+           MOVE DFHBMASF   TO CP3A
+           MOVE DFHBMASF   TO VL3A
+           MOVE DFHBMASF   TO TF3A
+           MOVE DFHBMASF   TO TM3A
+           MOVE DFHBMASF   TO DDN3A
+           MOVE DFHBMASK   TO LCONF3A
+           MOVE DFHBMFSE   TO CONF3A
+           MOVE '2'        TO ETAPE
            PERFORM  22000-TRAIT-ENVOI
            .
-       23450-ECRITURE-FIN.
+       23450-MODIFICATION-FIN.
       *------------------*      
-           IF CONF1I NOT = 'Y' AND NOT = 'N'
+           IF CONF3I NOT = 'Y' AND NOT = 'N'
              STRING 'CONFIRMATION INVALIDE' DELIMITED BY SIZE
-               INTO MESS11O
-             PERFORM  23400-ECRITURE
+               INTO MESS31O
+             PERFORM  23400-MODIFICATION
            END-IF
-           IF CONF1I = 'Y'
-             MOVE NUM1I TO E-NUMERO
-             MOVE NOM1I TO E-NOM
-             MOVE PNM1I TO E-PRENOM
-             MOVE DDN1I TO E-DATE-NAISS
-             IF TF1I NOT = LOW-VALUE 
-               MOVE TF1I TO  E-TELDOM
-             END-IF
-             IF TM1I NOT = LOW-VALUE 
-               MOVE TM1I TO  E-TELPOR
-             END-IF
-             IF CP1I NOT = LOW-VALUE
-                MOVE ADS1I TO E-ADR1
-                MOVE CP1I  TO E-CODEP  
-                MOVE VL1I  TO E-VILLE  
-             END-IF
-
-             EXEC CICS WRITE FILE  (MON-FICHIER)
+           IF CONF3I = 'Y'
+             MOVE NUM3I TO E-NUMERO
+             EXEC CICS READ  FILE  (MON-FICHIER)
                              RIDFLD(E-NUMERO)
-                             FROM  (E-STAGIAIRE)
+                             INTO  (E-STAGIAIRE)
+                             UPDATE
                              RESP  (C-R)
              END-EXEC
-             EVALUATE C-R 
-               WHEN DFHRESP(NORMAL)
-                 STRING 'STAGIARE ' NUM1I ' CREE' DELIMITED BY SIZE
-                        INTO MESS11O
-                 PERFORM 23900-RESET-INPUT
-               WHEN DFHRESP(DUPREC)
-                 MOVE 'STAGIARE DEJA EXISTANT' TO MESS11O 
-               WHEN OTHER
+             IF C-R = DFHRESP(NORMAL)
+               MOVE NUM3I TO E-NUMERO
+               MOVE NOM3I TO E-NOM
+               MOVE PNM3I TO E-PRENOM
+               MOVE DDN3I TO E-DATE-NAISS
+               IF TF3I NOT = LOW-VALUE 
+                 MOVE TF3I TO  E-TELDOM
+               ELSE 
+                 MOVE SPACES TO E-TELDOM
+               END-IF
+               IF TM3I NOT = LOW-VALUE 
+                 MOVE TM3I TO  E-TELPOR
+               ELSE 
+                 MOVE SPACES TO E-TELPOR
+               END-IF
+               IF CP3I NOT = LOW-VALUE
+                  MOVE ADS3I TO E-ADR1
+                  MOVE CP3I  TO E-CODEP  
+                  MOVE VL3I  TO E-VILLE 
+               ELSE 
+                  MOVE SPACES TO E-ADR1
+                                 E-CODEP  
+                                 E-VILLE  
+               END-IF
+               EXEC CICS REWRITE FILE  (MON-FICHIER)
+                                 FROM  (E-STAGIAIRE)
+                                 RESP  (C-R)
+               END-EXEC
+               IF C-R = DFHRESP(NORMAL)
+                 STRING 'PRODUIT ' NUM3I ' MODIFIE' DELIMITED BY SIZE
+                         INTO MESS31O
+               ELSE
                  PERFORM 80000-APPEL-SPERR
-                 STRING 'ERREUR FICHIER WRITE ' C-R-ED DELIMITED BY SIZE
-                         INTO MESS11O
-             END-EVALUATE
+                 STRING 'ERREUR FICHIER REWRITE' C-R-ED
+                         DELIMITED BY SIZE INTO MESS31O
+               END-IF
+             ELSE
+                 PERFORM 80000-APPEL-SPERR
+                 STRING 'ERREUR FICHIER READ UPDATE'  C-R-ED
+                         DELIMITED BY SIZE INTO MESS31O
+             END-IF
            ELSE
-             MOVE 'CREATION ABANDONEE' TO MESS11O
+             MOVE 'MODIFICATION ABANDONEE' TO MESS31O
            END-IF
            MOVE ' ' TO ETAPE
-           MOVE 'N' TO CONF1O 
+           MOVE 'N' TO CONF3O 
            PERFORM 22000-TRAIT-ENVOI
            .
-
-       23900-RESET-INPUT.
-      *------------------* 
-           MOVE LOW-VALUE TO NUM1I
-                             NOM1I
-                             PNM1I
-                             ADS1I
-                             CP1I
-                             VL1I
-                             TF1I
-                             TM1I
-                             DDN1I
-           . 
 
 
        80000-APPEL-SPERR.
@@ -389,14 +421,14 @@
            IF C-R NOT = DFHRESP(NORMAL)
              MOVE C-R TO C-R-ED
              STRING 'ERREUR APPEL SPERR ' C-R-ED DELIMITED BY SIZE
-                    INTO MESS11O
+                    INTO MESS31O
              PERFORM 22000-TRAIT-ENVOI
            END-IF
            EXEC CICS RECEIVE INTO(TEXT-ERREUR) RESP(C-R) END-EXEC
            IF C-R NOT = DFHRESP(NORMAL)
              MOVE C-R TO C-R-ED
              STRING 'ERREUR RECEIVE SPERR ' C-R-ED DELIMITED BY SIZE
-                    INTO MESS11O
+                    INTO MESS31O
              PERFORM 22000-TRAIT-ENVOI
            END-IF
            .

@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. INF2CI3.
+       PROGRAM-ID. INF4CI3.
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
        SOURCE-COMPUTER. IBM-390.
@@ -19,7 +19,7 @@
        01 C-R-ED                  PIC ZZZ9.
        01 WS-TIME                 PIC X(8).
        01 TEXT-ERREUR             PIC X(15).
-       01 MON-PROG                PIC X(8) VALUE 'INF2CI3 '.
+       01 MON-PROG                PIC X(8) VALUE 'INF4CI3 '.
        01 PROGMENU                PIC X(8) VALUE 'INF0CI3 '.
        01 SPERR                   PIC X(8) VALUE 'SPERR3  '.
        01 MON-FICHIER             PIC X(8) VALUE 'FSTAG03 '.
@@ -80,7 +80,7 @@
        21000-TRAIT-CHARGEMENT.
       *----------------------*
       *  CHARGEMENT DE LA MAP AVANT AFFICHAGE
-           MOVE LOW-VALUE TO MAP2I
+           MOVE LOW-VALUE TO MAP4I
            MOVE EIBTRMID  TO TS-NOM1
            MOVE MA-TRX    TO TS-NOM2
       *  SI TRAITEMENT PARTICULIER AVANT AFFICHAGE
@@ -99,17 +99,17 @@
        22000-TRAIT-ENVOI.
       *-----------------*
            STRING EIBTRMID '/' MON-MAPSET DELIMITED BY SIZE
-                  INTO TERM2O
+                  INTO TERM4O
            EXEC CICS ASKTIME ABSTIME(WS-TIME) END-EXEC
            EXEC CICS FORMATTIME ABSTIME(WS-TIME)
-                               DDMMYYYY(DAT2O)
+                               DDMMYYYY(DAT4O)
                                DATESEP ('/')
-                               TIME (TIM2O)
+                               TIME (TIM4O)
                                TIMESEP(':')
            END-EXEC
            EXEC CICS SEND MAP    (MA-MAP)
                           MAPSET (MON-MAPSET)
-                          FROM   (MAP2O)
+                          FROM   (MAP4O)
                           ERASE
                           CURSOR
            END-EXEC
@@ -144,14 +144,14 @@
                            RESP     (C-R)
            END-EXEC
            STRING 'PROGRAMME ' PROG-SUIVANT ' NON DISPONIBLE'
-                  DELIMITED BY SIZE INTO MESS2O
+                  DELIMITED BY SIZE INTO MESS4O
            PERFORM 22000-TRAIT-ENVOI
            .
        23100-TRAIT-ENTER.
       *------------------*
            EXEC CICS RECEIVE MAP   (MA-MAP)
                              MAPSET(MON-MAPSET)
-                             INTO  (MAP2I)
+                             INTO  (MAP4I)
                              RESP  (C-R)
            END-EXEC
            EVALUATE C-R
@@ -162,32 +162,40 @@
               WHEN OTHER
                 PERFORM 91000-ERREUR-CICS
            END-EVALUATE
-           IF NUM2I = LOW-VALUE 
-              STRING 'INDIQUE LE NUMERO DE STAGIAIRE '
-                  DELIMITED BY SIZE INTO MESS2O
-              PERFORM  22000-TRAIT-ENVOI
-           END-IF
-           PERFORM 23400-LECTURE
+
+           IF ETAPE NOT = '1'
+              IF NUM4I = LOW-VALUE 
+                STRING 'INDIQUE LE NUMERO DE STAGIAIRE '
+                    DELIMITED BY SIZE INTO MESS4O
+                PERFORM  22000-TRAIT-ENVOI
+              END-IF
+             PERFORM 23400-SUPRESSION-DEBUT
+           ELSE 
+             PERFORM 23450-MODIFICATION-FIN 
+           END-IF 
            .
 
-       23400-LECTURE.
-      *---------------*
+       23400-SUPRESSION-DEBUT.
+      *------------------------*
            EXEC CICS READ FILE  (MON-FICHIER)
-                          RIDFLD(NUM2I)
+                          RIDFLD(NUM4I)
                           INTO  (E-STAGIAIRE)
                           RESP  (C-R)
            END-EXEC
            EVALUATE C-R
              WHEN DFHRESP(NORMAL)
-               MOVE E-NOM        TO NOM2I
-               MOVE E-PRENOM     TO PNM2I
-               MOVE E-DATE-NAISS TO DDN2I
-               MOVE E-TELDOM     TO TF2I
-               MOVE E-TELPOR     TO TM2I
-               MOVE E-ADR1       TO ADS2I
-               MOVE E-CODEP      TO CP2I  
-               MOVE E-VILLE      TO VL2I  
-               PERFORM 22000-TRAIT-ENVOI
+               MOVE E-NOM        TO NOM4I
+               MOVE E-PRENOM     TO PNM4I
+               MOVE E-DATE-NAISS TO DDN4I
+               MOVE E-TELDOM     TO TF4I
+               MOVE E-TELPOR     TO TM4I
+               MOVE E-ADR1       TO ADS4I
+               MOVE E-CODEP      TO CP4I  
+               MOVE E-VILLE      TO VL4I  
+               MOVE DFHBMASK     TO LCONF4A
+               MOVE DFHBMFSE     TO CONF4A
+               MOVE '1'        TO ETAPE
+               PERFORM  22000-TRAIT-ENVOI
              WHEN DFHRESP(NOTFND)
                MOVE 'STAGIAIRE NON TROUVE' TO MESS2O
              WHEN OTHER
@@ -195,7 +203,34 @@
                STRING 'ERREUR FICHIER ' TEXT-ERREUR DELIMITED BY SIZE
                       INTO MESS2O
            END-EVALUATE
-            .
+           .
+       23450-MODIFICATION-FIN.
+      *-----------------------*
+           IF CONF4I NOT = 'Y' AND NOT = 'N'
+             STRING 'CONFIRMATION INVALIDE' DELIMITED BY SIZE
+               INTO MESS41O
+             PERFORM  23400-SUPRESSION-DEBUT
+           END-IF
+           IF CONF4I = 'Y'
+             MOVE NUM4I TO ST-NUMERO
+             EXEC CICS DELETE FILE  (MON-FICHIER)
+                              RIDFLD(E-NUMERO)
+                              RESP  (C-R)
+             END-EXEC
+             IF C-R = DFHRESP(NORMAL)
+               STRING 'STAGIAIRE ' NUM4I ' SUPPRIME' DELIMITED BY SIZE
+                       INTO MESS4O
+             ELSE
+               PERFORM 80000-APPEL-SPERR
+               STRING 'ERREUR FICHIER DELETE'  C-R-ED
+                       DELIMITED BY SIZE INTO MESS4O
+             END-IF
+           ELSE
+             MOVE 'SUPPRESSION ABANDONEE' TO MESS4O
+           END-IF
+           MOVE ' '    TO ETAPE
+           PERFORM 22000-TRAIT-ENVOI
+           .
        23900-TRAIT-FIN.
       *---------------*
            MOVE 'FIN DE LA TRANSACTION' TO MESSAGE-TXT
