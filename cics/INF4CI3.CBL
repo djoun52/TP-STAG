@@ -11,6 +11,7 @@
            05 PROG-PRECEDENT      PIC X(8).
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
+           05 ETAPE               PIC X.
            05 TS-NOM.
              10 TS-NOM1           PIC X(4).
              10 TS-NOM2           PIC X(4).
@@ -23,9 +24,9 @@
        01 PROGMENU                PIC X(8) VALUE 'INF0CI3 '.
        01 SPERR                   PIC X(8) VALUE 'SPERR3  '.
        01 MON-FICHIER             PIC X(8) VALUE 'FSTAG03 '.
-       01 MA-MAP                  PIC X(8) VALUE 'MAP2    '.
+       01 MA-MAP                  PIC X(8) VALUE 'MAP4    '.
        01 MON-MAPSET              PIC X(8) VALUE 'MAPC3   '.
-       01 MA-TRX                  PIC X(4) VALUE 'T2C3'.
+       01 MA-TRX                  PIC X(4) VALUE 'T4C3'.
        01 WS-NUMERO.
            05 WS-NUMERO9          PIC 9999.
       *   DESCRIPTION DE LA MAP
@@ -144,7 +145,7 @@
                            RESP     (C-R)
            END-EXEC
            STRING 'PROGRAMME ' PROG-SUIVANT ' NON DISPONIBLE'
-                  DELIMITED BY SIZE INTO MESS4O
+                  DELIMITED BY SIZE INTO MESS41O
            PERFORM 22000-TRAIT-ENVOI
            .
        23100-TRAIT-ENTER.
@@ -166,7 +167,7 @@
            IF ETAPE NOT = '1'
               IF NUM4I = LOW-VALUE 
                 STRING 'INDIQUE LE NUMERO DE STAGIAIRE '
-                    DELIMITED BY SIZE INTO MESS4O
+                    DELIMITED BY SIZE INTO MESS41O
                 PERFORM  22000-TRAIT-ENVOI
               END-IF
              PERFORM 23400-SUPRESSION-DEBUT
@@ -212,21 +213,21 @@
              PERFORM  23400-SUPRESSION-DEBUT
            END-IF
            IF CONF4I = 'Y'
-             MOVE NUM4I TO ST-NUMERO
+             MOVE NUM4I TO E-NUMERO
              EXEC CICS DELETE FILE  (MON-FICHIER)
                               RIDFLD(E-NUMERO)
                               RESP  (C-R)
              END-EXEC
              IF C-R = DFHRESP(NORMAL)
                STRING 'STAGIAIRE ' NUM4I ' SUPPRIME' DELIMITED BY SIZE
-                       INTO MESS4O
+                       INTO MESS41O
              ELSE
                PERFORM 80000-APPEL-SPERR
                STRING 'ERREUR FICHIER DELETE'  C-R-ED
-                       DELIMITED BY SIZE INTO MESS4O
+                       DELIMITED BY SIZE INTO MESS41O
              END-IF
            ELSE
-             MOVE 'SUPPRESSION ABANDONEE' TO MESS4O
+             MOVE 'SUPPRESSION ABANDONEE' TO MESS41O
            END-IF
            MOVE ' '    TO ETAPE
            PERFORM 22000-TRAIT-ENVOI

@@ -11,7 +11,11 @@
            05 PROG-PRECEDENT      PIC X(8).
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
-           05 FILLER              PIC X(26).
+           05 ETAPE               PIC X.
+           05 MESSPROG            PIC X(17) VALUE LOW-VALUE.
+           05 TS-NOM.
+             10 TS-NOM1           PIC X(4).
+             10 TS-NOM2           PIC X(4).
        01 C-R                     PIC S9(8) COMP.
        01 C-R-ED                  PIC ZZZ9.
        01 WS-TIME                 PIC X(8).
@@ -26,8 +30,8 @@
          05 LIBELLE-PROG.
            10 FILLER              PIC X(8) VALUE 'INF1CI3 '.
            10 FILLER              PIC X(8) VALUE 'INF2CI3 '.
-           10 FILLER              PIC X(8) VALUE 'INF3CI3 '.
            10 FILLER              PIC X(8) VALUE 'INF4CI3 '.
+           10 FILLER              PIC X(8) VALUE 'INF3CI3 '.
            10 FILLER              PIC X(8) VALUE 'INF5CI3 '.
          05 NOM-PROG REDEFINES LIBELLE-PROG.
            10 PROG PIC X(8) OCCURS 5 TIMES.
@@ -120,7 +124,7 @@
                           ERASE
                           CURSOR
            END-EXEC
-
+           MOVE MESSPROG TO MESS0I 
            MOVE PROG-COURANT TO PROG-SUIVANT
 
            EXEC CICS RETURN TRANSID  (MA-TRX)

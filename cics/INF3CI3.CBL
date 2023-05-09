@@ -12,10 +12,11 @@
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
            05 ETAPE               PIC X.
+           05 MESSPROG            PIC X(17) VALUE LOW-VALUE.
            05 TS-NOM.
              10 TS-NOM1           PIC X(4).
              10 TS-NOM2           PIC X(4).
-           05 FILLER              PIC X(26).
+
        01 C-R                     PIC S9(8) COMP.
        01 C-R-ED                  PIC ZZZ9.
        01 WS-TIME                 PIC X(8).
@@ -122,13 +123,14 @@
                           ERASE
                           CURSOR
            END-EXEC
-
+           
            MOVE PROG-COURANT TO PROG-SUIVANT
 
            EXEC CICS RETURN TRANSID  (MA-TRX)
                             COMMAREA (WS-COMMAREA)
                             LENGTH   (LENGTH OF WS-COMMAREA)
            END-EXEC
+
            .
 
        23000-TRAIT-RECEPTION.
@@ -196,24 +198,24 @@
            IF NUM3I = LOW-VALUE 
               STRING 'NUMERO DE STAGIAIRE OBLIGATOIRE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
-           IF NUM3I < 1000 OR NUM1I > 5000
+           IF NUM3I < 1000 OR NUM3I > 5000
               STRING 'LE NUMERO DU STAGAIRE DOIT ETRE ENTRE 1000' 
                       ' ET 5000' DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF 
       *  CHECK NOM STAGIAIRE
            IF NOM3I = LOW-VALUE 
               STRING 'NOM DU STAGIAIRE OBLIGATOIRE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
       *  CHECK PRENOM STAGIAIRE
            IF PNM3I = LOW-VALUE 
               STRING 'PRENOM DU STAGIAIRE OBLIGATOIRE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
 
       * CHECK SI VILLE OU ADRESSE INPUT SONT REMPLIS DE BLANC     
@@ -231,7 +233,7 @@
            ELSE
               STRING 'ADRESSE INCOMPLETE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
 
       *  CHECK TELEPHONE 
@@ -243,7 +245,7 @@
                        ' 01 OU 02 OU 03 OU 04 OU 05' 
                       DELIMITED BY SIZE INTO MESS31O
                 MOVE '  ' TO TF3I(1:2)   
-                PERFORM  22000-TRAIT-ENVOI
+                PERFORM  23400-MODIFICATION-DEBUT
              END-IF
            END-IF 
            IF TM3I NOT = LOW-VALUE 
@@ -253,42 +255,42 @@
                        ' 06 OU 07' 
                       DELIMITED BY SIZE INTO MESS31O
                 MOVE '  ' TO TM3I(1:2)   
-                PERFORM  22000-TRAIT-ENVOI
+                PERFORM  23400-MODIFICATION-DEBUT
              END-IF
            END-IF 
       *  CHECK DATE DE NAISSANCE 
            IF DDN3I = LOW-VALUE 
               STRING 'DATE DE NAISSANCE DU STAGIAIRE OBLIGATOIRE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
            MOVE DDN3I TO DDN-9
            IF DDN-9(1:2) < 01 
              STRING 'JOURS DE NAISSANCE INVALIDE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
            IF (DDN-9(3:2) = '01' OR = '03' OR = '05' OR = '07' OR 
            = '08' OR = '10' OR = '12') AND DDN-9(1:2) > 31 THEN
              STRING 'JOURS DE NAISSANCE INVALIDE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF    
            IF DDN-9(3:2) = '02' AND DDN-9(1:2) > 29 THEN
              STRING 'JOURS DE NAISSANCE INVALIDE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF  
            IF (DDN-9(3:2) = '04' OR = '06' OR = '09' OR = '11') AND 
               DDN-9(1:2) > 30 THEN 
              STRING 'JOURS DE NAISSANCE INVALIDE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF 
            IF DDN-9(3:2) > 12
               STRING 'MOIS DE NAISSANCE INVALIDE'
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
            EXEC CICS ASKTIME ABSTIME(WS-TIME) END-EXEC
            EXEC CICS FORMATTIME ABSTIME(WS-TIME)
@@ -300,7 +302,7 @@
            IF AGE-OK < 17 OR AGE-OK > 30              
               STRING 'ANNEE DE NAISSANCE INVALIDE ' DAT-9 ' '  AGE-OK
                   DELIMITED BY SIZE INTO MESS31O
-              PERFORM  22000-TRAIT-ENVOI
+              PERFORM  23400-MODIFICATION-DEBUT
            END-IF
            . 
        23400-MODIFICATION-DEBUT.
@@ -315,12 +317,27 @@
                MOVE E-NOM        TO NOM3I
                MOVE E-PRENOM     TO PNM3I
                MOVE E-DATE-NAISS TO DDN3I
-               MOVE E-TELDOM     TO TF3I
-               MOVE E-TELPOR     TO TM3I
-               MOVE E-ADR1       TO ADS3I
-               MOVE E-CODEP      TO CP3I  
-               MOVE E-VILLE      TO VL3I  
-               MOVE 'VOUS POUVEZ MODIFIEZ LES DONNNEES' TO OPER3O
+               IF E-TELDOM NOT = SPACES
+                 MOVE E-TELDOM     TO TF3I
+               END-IF
+               IF E-TELPOR NOT = SPACES
+                 MOVE E-TELPOR     TO TM3I
+               END-IF
+               IF E-ADR1 NOT = SPACES
+                 MOVE E-ADR1       TO ADS3I
+                 MOVE E-CODEP      TO CP3I  
+                 MOVE E-VILLE      TO VL3I
+               END-IF
+               MOVE DFHBMASF     TO NUM3A
+               MOVE DFHBMFSE     TO NOM3A
+               MOVE DFHBMFSE     TO PNM3A 
+               MOVE DFHBMFSE     TO ADS3A
+               MOVE DFHBMFSE     TO CP3A
+               MOVE DFHBMFSE     TO VL3A
+               MOVE DFHBMFSE     TO TF3A
+               MOVE DFHBMFSE     TO TM3A
+               MOVE DFHBMFSE     TO DDN3A  
+               MOVE 'VOUS POUVEZ MODIFIEZ LES DONNEES' TO OPER3O
                MOVE '1'        TO ETAPE
                PERFORM  22000-TRAIT-ENVOI
              WHEN DFHRESP(NOTFND)
@@ -352,7 +369,7 @@
            IF CONF3I NOT = 'Y' AND NOT = 'N'
              STRING 'CONFIRMATION INVALIDE' DELIMITED BY SIZE
                INTO MESS31O
-             PERFORM  23400-MODIFICATION
+             PERFORM  23430-MODIFICATION
            END-IF
            IF CONF3I = 'Y'
              MOVE NUM3I TO E-NUMERO
@@ -391,8 +408,10 @@
                                  RESP  (C-R)
                END-EXEC
                IF C-R = DFHRESP(NORMAL)
-                 STRING 'PRODUIT ' NUM3I ' MODIFIE' DELIMITED BY SIZE
-                         INTO MESS31O
+                 STRING 'STAGIAIRE ' NUM3I ' MODIFIE' DELIMITED BY SIZE
+                         INTO MESSPROG
+                 MOVE PROGMENU TO PROG-SUIVANT
+                 PERFORM 23050-PROG-SUIVANT 
                ELSE
                  PERFORM 80000-APPEL-SPERR
                  STRING 'ERREUR FICHIER REWRITE' C-R-ED
