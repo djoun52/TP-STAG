@@ -303,19 +303,35 @@
            
        23400-ECRITURE.
       *------------------* 
-           MOVE DFHBMASF   TO NUM1A
-           MOVE DFHBMASF   TO NOM1A
-           MOVE DFHBMASF   TO PNM1A 
-           MOVE DFHBMASF   TO ADS1A
-           MOVE DFHBMASF   TO CP1A
-           MOVE DFHBMASF   TO VL1A
-           MOVE DFHBMASF   TO TF1A
-           MOVE DFHBMASF   TO TM1A
-           MOVE DFHBMASF   TO DDN1A
-           MOVE DFHBMASK   TO LCONF1A
-           MOVE DFHBMFSE   TO CONF1A
-           MOVE '1'        TO ETAPE
-           PERFORM  22000-TRAIT-ENVOI
+           EXEC CICS WRITE FILE  (MON-FICHIER)
+                           RIDFLD(E-NUMERO)
+                           FROM  (E-STAGIAIRE)
+                           RESP  (C-R)
+           END-EXEC
+           EVALUATE C-R 
+             WHEN DFHRESP(NORMAL)
+               MOVE DFHBMASF   TO NUM1A
+               MOVE DFHBMASF   TO NOM1A
+               MOVE DFHBMASF   TO PNM1A 
+               MOVE DFHBMASF   TO ADS1A
+               MOVE DFHBMASF   TO CP1A
+               MOVE DFHBMASF   TO VL1A
+               MOVE DFHBMASF   TO TF1A
+               MOVE DFHBMASF   TO TM1A
+               MOVE DFHBMASF   TO DDN1A
+               MOVE DFHBMASK   TO LCONF1A
+               MOVE DFHBMFSE   TO CONF1A
+               MOVE '1'        TO ETAPE
+               PERFORM  22000-TRAIT-ENVOI
+             WHEN DFHRESP(DUPREC)
+               MOVE 'STAGIARE DEJA EXISTANT' TO MESS11O 
+               PERFORM 22000-TRAIT-ENVOI
+             WHEN OTHER
+               PERFORM 80000-APPEL-SPERR
+               STRING 'ERREUR FICHIER WRITE ' C-R-ED DELIMITED BY SIZE
+                       INTO MESS11O
+               PERFORM 22000-TRAIT-ENVOI
+           END-EVALUATE
            .
        23450-ECRITURE-FIN.
       *------------------*      
@@ -353,10 +369,12 @@
                  PERFORM 23900-RESET-INPUT
                WHEN DFHRESP(DUPREC)
                  MOVE 'STAGIARE DEJA EXISTANT' TO MESS11O 
+                 PERFORM 22000-TRAIT-ENVOI
                WHEN OTHER
                  PERFORM 80000-APPEL-SPERR
                  STRING 'ERREUR FICHIER WRITE ' C-R-ED DELIMITED BY SIZE
                          INTO MESS11O
+                 PERFORM 22000-TRAIT-ENVOI
              END-EVALUATE
            ELSE
              MOVE 'CREATION ABANDONEE' TO MESS11O
@@ -378,8 +396,6 @@
                              TM1I
                              DDN1I
            . 
-
-
        80000-APPEL-SPERR.
       *------------------*
            EXEC CICS LINK PROGRAM (SPERR)

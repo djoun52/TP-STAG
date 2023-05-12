@@ -307,9 +307,9 @@ NUM5    DFHMDF POS=(04,47),HILIGHT=UNDERLINE,                          X00000400
         DFHMDF POS=(04,52),ATTRB=ASKIP,LENGTH=0           
         DFHMDF POS=(04,60),ATTRB=ASKIP,LENGTH=6,INITIAL='PAGE :'
 PAG5    DFHMDF POS=(04,67),ATTRB=ASKIP,LENGTH=4    
-        DFHMDF POS=(06,02),ATTRB=ASKIP,LENGTH=65,                      X00000211
-               INITIAL='IDENT  |         NOM         |        PRENOM   X
-                     |  NE LE   |'
+        DFHMDF POS=(06,02),ATTRB=ASKIP,LENGTH=65,COLOR=YELLOW,         X00000211
+               INITIAL='IDENT |         NOM         |        PRENOM    X
+                  |  NE LE   |'
 LIG5    DFHMDF POS=(07,01),ATTRB=(ASKIP,FSET),LENGTH=79,OCCURS=10                      
 MESS5   DFHMDF POS=(22,01),ATTRB=ASKIP,LENGTH=79,COLOR=RED        
         DFHMDF POS=(23,01),ATTRB=ASKIP,LENGTH=79,COLOR=RED,            X

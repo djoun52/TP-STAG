@@ -198,11 +198,13 @@
                MOVE '1'        TO ETAPE
                PERFORM  22000-TRAIT-ENVOI
              WHEN DFHRESP(NOTFND)
-               MOVE 'STAGIAIRE NON TROUVE' TO MESS2O
+               MOVE 'STAGIAIRE NON TROUVE' TO MESS41O
+               PERFORM  22000-TRAIT-ENVOI
              WHEN OTHER
                PERFORM 80000-APPEL-SPERR
                STRING 'ERREUR FICHIER ' TEXT-ERREUR DELIMITED BY SIZE
-                      INTO MESS2O
+                      INTO MESS41O
+               PERFORM  22000-TRAIT-ENVOI
            END-EVALUATE
            .
        23450-MODIFICATION-FIN.
