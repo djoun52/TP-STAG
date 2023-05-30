@@ -36,6 +36,18 @@
        01 AGE-OK                  PIC 9999.
        01 WS-NUMERO.
            05 WS-NUMERO9          PIC 9999.
+       01 TABLE-DEP-LIM.
+          05 VALUE 67 PIC 99.
+          05 VALUE 68 PIC 99.
+          05 VALUE 88 PIC 99.
+          05 VALUE 54 PIC 99.
+          05 VALUE 57 PIC 99.
+       01 REDEFINES TABLE-DEP-LIM.
+         05  OCCURS 5.
+           10 DP  PIC 99.
+       77  CPT              PIC 99.
+       77  CHECK-DEP-LIM    PIC X.
+
       *   DESCRIPTION DE LA MAP
        COPY MAPC3.
 
@@ -218,6 +230,9 @@
            IF ADS1I = SPACES THEN
              MOVE LOW-VALUE TO ADS1I
            END-IF            
+           IF CP1I = SPACES THEN
+             MOVE LOW-VALUE TO CP1I
+           END-IF            
            IF VL1I = SPACES THEN
              MOVE LOW-VALUE TO VL1I
            END-IF            
@@ -231,7 +246,21 @@
                   DELIMITED BY SIZE INTO MESS11O
               PERFORM  22000-TRAIT-ENVOI
            END-IF
-
+           
+      *  CHECK DEPARTEMANT LIMITROPHE   
+           IF CP1I NOT = LOW-VALUE 
+             MOVE 'F' TO CHECK-DEP-LIM
+             PERFORM VARYING CPT FROM 1 BY 1 UNTIL CPT > 5 
+               IF DP(CPT) = CP1I(1:2)
+                 MOVE 'T' TO CHECK-DEP-LIM              
+               END-IF
+             END-PERFORM
+             IF CHECK-DEP-LIM  = 'F'
+                STRING 'DEPARTEMENT NON LIMITROPHE'
+                    DELIMITED BY SIZE INTO MESS11O
+                PERFORM  22000-TRAIT-ENVOI            
+             END-IF
+           END-IF
       *  CHECK TELEPHONE 
            IF TF1I NOT = LOW-VALUE 
              MOVE TF1I TO NUM-TEL

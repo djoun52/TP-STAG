@@ -36,6 +36,17 @@
        01 AGE-OK                  PIC 9999.
        01 WS-NUMERO.
            05 WS-NUMERO9          PIC 9999.
+       01 TABLE-DEP-LIM.
+          05 VALUE 67 PIC 99.
+          05 VALUE 68 PIC 99.
+          05 VALUE 88 PIC 99.
+          05 VALUE 54 PIC 99.
+          05 VALUE 57 PIC 99.
+       01 REDEFINES TABLE-DEP-LIM.
+         05  OCCURS 5.
+           10 DP  PIC 99.
+       77  CPT              PIC 99.
+       77  CHECK-DEP-LIM    PIC X.
       *   DESCRIPTION DE LA MAP
        COPY MAPC3.
 
@@ -221,7 +232,10 @@
       * CHECK SI VILLE OU ADRESSE INPUT SONT REMPLIS DE BLANC     
            IF ADS3I = SPACES THEN
              MOVE LOW-VALUE TO ADS3I
-           END-IF            
+           END-IF         
+           IF CP3I = SPACES THEN
+             MOVE LOW-VALUE TO CP3I
+           END-IF           
            IF VL3I = SPACES THEN
              MOVE LOW-VALUE TO VL3I
            END-IF            
@@ -234,6 +248,20 @@
               STRING 'ADRESSE INCOMPLETE'
                   DELIMITED BY SIZE INTO MESS31O
               PERFORM  23400-MODIFICATION-DEBUT
+           END-IF
+      *  CHECK DEPARTEMANT LIMITROPHE   
+           IF CP3I NOT = LOW-VALUE
+             MOVE 'F' TO CHECK-DEP-LIM
+             PERFORM VARYING CPT FROM 1 BY 1 UNTIL CPT > 5 
+               IF DP(CPT) = CP3I(1:2)
+                 MOVE 'T' TO CHECK-DEP-LIM              
+               END-IF
+             END-PERFORM
+             IF CHECK-DEP-LIM  = 'F'
+                STRING 'DEPARTEMENT NON LIMITROPHE'
+                    DELIMITED BY SIZE INTO MESS31O
+                PERFORM  23400-MODIFICATION-DEBUT            
+             END-IF
            END-IF
 
       *  CHECK TELEPHONE 
