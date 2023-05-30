@@ -12,6 +12,7 @@
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
            05 ETAPE               PIC X.
+           05 MESSPROG            PIC X(40) .
            05 TS-NOM.
              10 TS-NOM1           PIC X(4).
              10 TS-NOM2           PIC X(4).
@@ -222,7 +223,9 @@
              END-EXEC
              IF C-R = DFHRESP(NORMAL)
                STRING 'STAGIAIRE ' NUM4I ' SUPPRIME' DELIMITED BY SIZE
-                       INTO MESS41O
+                       INTO MESSPROG
+               MOVE PROGMENU TO PROG-SUIVANT
+               PERFORM 23050-PROG-SUIVANT 
              ELSE
                PERFORM 80000-APPEL-SPERR
                STRING 'ERREUR FICHIER DELETE'  C-R-ED

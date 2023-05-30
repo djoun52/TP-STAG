@@ -12,6 +12,7 @@
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
            05 ETAPE               PIC X.
+           05 MESSPROG            PIC X(40) .
            05 FIN-FIC             PIC X.
            05 TS-NOM.
              10 TS-NOM1           PIC X(4).

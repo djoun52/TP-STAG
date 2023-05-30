@@ -12,7 +12,7 @@
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
            05 ETAPE               PIC X.
-           05 MESSPROG            PIC X(17) VALUE LOW-VALUE.
+           05 MESSPROG            PIC X(40).
            05 TS-NOM.
              10 TS-NOM1           PIC X(4).
              10 TS-NOM2           PIC X(4).
@@ -118,15 +118,17 @@
                                TIME (TIM0O)
                                TIMESEP(':')
            END-EXEC
+           MOVE ALL SPACE TO MESS0O
+           MOVE MESSPROG TO MESS0O 
            EXEC CICS SEND MAP    (MA-MAP)
                           MAPSET (MON-MAPSET)
                           FROM   (MAP0O)
                           ERASE
                           CURSOR
            END-EXEC
-           MOVE MESSPROG TO MESS0I 
            MOVE PROG-COURANT TO PROG-SUIVANT
-
+           MOVE ALL SPACE TO MESSPROG
+ 
            EXEC CICS RETURN TRANSID  (MA-TRX)
                             COMMAREA (WS-COMMAREA)
                             LENGTH   (LENGTH OF WS-COMMAREA)

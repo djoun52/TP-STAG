@@ -12,6 +12,7 @@
            05 PROG-COURANT        PIC X(8).
            05 PROG-SUIVANT        PIC X(8).
            05 ETAPE               PIC X.
+           05 MESSPROG            PIC X(40) .
            05 TS-NOM.
              10 TS-NOM1           PIC X(4).
              10 TS-NOM2           PIC X(4).
@@ -303,35 +304,30 @@
            
        23400-ECRITURE.
       *------------------* 
-           EXEC CICS WRITE FILE  (MON-FICHIER)
-                           RIDFLD(E-NUMERO)
-                           FROM  (E-STAGIAIRE)
-                           RESP  (C-R)
-           END-EXEC
-           EVALUATE C-R 
-             WHEN DFHRESP(NORMAL)
-               MOVE DFHBMASF   TO NUM1A
-               MOVE DFHBMASF   TO NOM1A
-               MOVE DFHBMASF   TO PNM1A 
-               MOVE DFHBMASF   TO ADS1A
-               MOVE DFHBMASF   TO CP1A
-               MOVE DFHBMASF   TO VL1A
-               MOVE DFHBMASF   TO TF1A
-               MOVE DFHBMASF   TO TM1A
-               MOVE DFHBMASF   TO DDN1A
-               MOVE DFHBMASK   TO LCONF1A
-               MOVE DFHBMFSE   TO CONF1A
-               MOVE '1'        TO ETAPE
-               PERFORM  22000-TRAIT-ENVOI
-             WHEN DFHRESP(DUPREC)
-               MOVE 'STAGIARE DEJA EXISTANT' TO MESS11O 
-               PERFORM 22000-TRAIT-ENVOI
-             WHEN OTHER
-               PERFORM 80000-APPEL-SPERR
-               STRING 'ERREUR FICHIER WRITE ' C-R-ED DELIMITED BY SIZE
-                       INTO MESS11O
-               PERFORM 22000-TRAIT-ENVOI
-           END-EVALUATE
+           
+           EXEC CICS READ FILE  (MON-FICHIER)
+                          RIDFLD(NUM1I)
+                          INTO  (E-STAGIAIRE)
+                          RESP  (C-R)
+           END-EXEC 
+           IF C-R = DFHRESP(NORMAL)
+             MOVE 'STAGIARE DEJA EXISTANT' TO MESS11O 
+             PERFORM 22000-TRAIT-ENVOI
+           ELSE 
+             MOVE DFHBMASF   TO NUM1A
+             MOVE DFHBMASF   TO NOM1A
+             MOVE DFHBMASF   TO PNM1A 
+             MOVE DFHBMASF   TO ADS1A
+             MOVE DFHBMASF   TO CP1A
+             MOVE DFHBMASF   TO VL1A
+             MOVE DFHBMASF   TO TF1A
+             MOVE DFHBMASF   TO TM1A
+             MOVE DFHBMASF   TO DDN1A
+             MOVE DFHBMASK   TO LCONF1A
+             MOVE DFHBMFSE   TO CONF1A
+             MOVE '1'        TO ETAPE
+             PERFORM  22000-TRAIT-ENVOI
+           END-IF 
            .
        23450-ECRITURE-FIN.
       *------------------*      
@@ -365,10 +361,13 @@
              EVALUATE C-R 
                WHEN DFHRESP(NORMAL)
                  STRING 'STAGIARE ' NUM1I ' CREE' DELIMITED BY SIZE
-                        INTO MESS11O
-                 PERFORM 23900-RESET-INPUT
+                       INTO MESSPROG
+                 MOVE PROGMENU TO PROG-SUIVANT
+                 PERFORM 23050-PROG-SUIVANT                
                WHEN DFHRESP(DUPREC)
                  MOVE 'STAGIARE DEJA EXISTANT' TO MESS11O 
+                 MOVE ' ' TO ETAPE
+                 MOVE 'N' TO CONF1O
                  PERFORM 22000-TRAIT-ENVOI
                WHEN OTHER
                  PERFORM 80000-APPEL-SPERR
